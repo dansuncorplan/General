@@ -1,0 +1,73 @@
+#region Prolog
+#****Begin: Generated Statements***
+#****End: Generated Statements****
+
+# Temp - Define sample text file used to test attachment functionality
+# sFilename = GetProcessErrorFileDirectory | GetProcessName | '.txt';
+
+# Temp - Populate sample text file
+# TextOutput( sFilename, 'This', 'is', 'a', 'sample', 'TXT', 'file' );
+
+# The single quote character (ie the apostrophe character)
+sQuote = CHAR( 39 );
+
+# Relative location of the PowerShell script
+sScript = '..\Powershell_Scripts\email.ps1';
+
+# First recipient
+sEmailTo = sQuote | pEmailTo | sQuote;
+
+# Second recipient (optional)
+If(pEmailTo2@<>'');
+  sEmailTo = sEmailTo | ', ';
+  sEmailTo = sEmailTo | sQuote | pEmailTo2 | sQuote;
+Endif;
+
+# Third recipient (optional)
+If(pEmailTo3@<>'');
+  sEmailTo = sEmailTo | ', ';
+  sEmailTo = sEmailTo | sQuote | pEmailTo3 | sQuote;
+Endif;
+
+# Subject of the email
+sEmailSubject = pSubject;
+
+# Email message (HTML tags optional)
+sEmailBody = '<p>'|pBody|'</p><p>Email from IBM Planning Analytics Cloud.</p>';
+
+# File attachment
+sEmailAttach = pFile;
+# sEmailAttach=sFilename;
+# or leave blank if no file to be attached
+# sEmailAttach = '';
+
+# Build command line
+sCommand = 'Powershell ';
+sCommand = sCommand | sScript | ' ';
+sCommand = sCommand | '-emailTo ' | sEmailTo | ' ';
+sCommand = sCommand | '-emailSubject ' | sQuote | sEmailSubject  | sQuote | ' ';
+sCommand = sCommand | '-emailBody ' | sQuote | sEmailBody | sQuote | ' ';
+# Include the attachment if one has been specified
+IF( sEmailAttach @<> '' );
+	sCommand = sCommand | '-emailAttach ' | sQuote | sEmailAttach | sQuote | ' ';
+ENDIF;
+
+#endregion
+#region Metadata
+#****Begin: Generated Statements***
+#****End: Generated Statements****
+#endregion
+#region Data
+#****Begin: Generated Statements***
+#****End: Generated Statements****
+#endregion
+#region Epilog
+#****Begin: Generated Statements***
+#****End: Generated Statements****
+
+# Do not wait for the command to finish executing, to minimise risk of hanging and locking
+nWait = 0;
+
+# Run the PowerShell script
+ExecuteCommand( sCommand, nWait );
+#endregion
